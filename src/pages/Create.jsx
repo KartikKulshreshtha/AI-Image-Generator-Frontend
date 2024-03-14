@@ -35,7 +35,7 @@ const Create = () => {
     if (form.description) {
       try {
         setGeneratingImg(true);
-        const response = await fetch("http://localhost:8080/api/dalle/prompt", {
+        const response = await fetch("https://ai-image-generator-backend-p94i.onrender.com/api/dalle/prompt", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -69,7 +69,7 @@ const Create = () => {
     if (form.description && form.image) {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/post/upload", {
+        const response = await fetch("https://ai-image-generator-backend-p94i.onrender.com/api/post/upload", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

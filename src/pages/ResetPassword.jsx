@@ -1,54 +1,48 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
 import Logo from "../assets/Logo.png";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { IoIosEyeOff } from "react-icons/io";
-import { FaEye } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { serviceUrl } from "../service/url";
-// import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
-  const navigate = useNavigate();
-  //States
+const Login = () => {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [userData, setUserData] = useState({
-    email: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-  });
 
-  const handleSubmit = async (e) => {
+  const navigate = useNavigate();
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const email = queryParams.get("email");
+  const handleReset = async (e) => {
     e.preventDefault();
-    if (userData.password !== userData.confirmPassword) {
+    if (newPassword !== confirmPassword) {
       setShowAlert(true);
       setAlertMessage("Passwords do not match!, please try again");
       setAlertType("error");
     } else {
-      const response = await axios.post(`${serviceUrl}auth/signup`, userData);
+      const response = await axios.post(`${serviceUrl}auth/reset`, {
+        newPassword: newPassword,
+        email: email,
+      });
       if (response.data.success) {
         setShowAlert(true);
-        setAlertMessage("Signup Successfully");
+        setAlertMessage(response.data.message);
         setAlertType("success");
-
         setTimeout(() => {
           navigate("/");
-          window.location.reload();
-        }, 2000);
-        localStorage.setItem("token", response.data.token);
+        }, 1000);
+      } else {
+        setShowAlert(true);
+        setAlertMessage(response.data.message);
+        setAlertType("error");
       }
     }
   };
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
-    <main className="w-full flex flex-col items-center justify-center bg-gray-50 sm:px-4">
+    <main className="w-ful flex flex-col items-center justify-center bg-gray-50 sm:px-4">
       {showAlert && (
         <div className="flex w-96 shadow-lg rounded-lg top-0 fixed">
           {alertType === "success" ? (
@@ -120,96 +114,36 @@ const Signup = () => {
           />
           <div className="mt-3 space-y-2">
             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">
-              Create an Account
+              Reset your password
             </h3>
-            <p className="">
-              Already have an account?
-              <Link
-                to="/"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Login
-              </Link>
-            </p>
           </div>
         </div>
         <div className="bg-white shadow p-4 py-6 sm:p-6 sm:rounded-lg">
-          <form className="space-y-5">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
             <div>
-              <label className="font-medium">Name</label>
+              <label className="font-medium">New Password</label>
               <input
-                type="text"
+                type="password"
                 required
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                onChange={(e) =>
-                  setUserData((prevUserData) => ({
-                    ...prevUserData,
-                    username: e.target.value,
-                  }))
-                }
               />
             </div>
             <div>
-              <label className="font-medium">Email</label>
+              <label className="font-medium">Confirm New Password</label>
               <input
-                type="email"
+                type="password"
                 required
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                onChange={(e) =>
-                  setUserData((prevUserData) => ({
-                    ...prevUserData,
-                    email: e.target.value,
-                  }))
-                }
               />
             </div>
-            <div className="relative">
-              <label className="font-medium">Password</label>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={userData.password}
-                onChange={(e) =>
-                  setUserData((prevUserData) => ({
-                    ...prevUserData,
-                    password: e.target.value,
-                  }))
-                }
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg pr-10"
-              />
-              {!showPassword ? (
-                <FaEye
-                  className="absolute right-3 top-1/2 transform translate-y-1/2 text-gray-400 cursor-pointer"
-                  onClick={togglePasswordVisibility}
-                />
-              ) : (
-                <IoIosEyeOff
-                  className="absolute right-3 top-1/2 transform translate-y-1/2 text-gray-400 cursor-pointer"
-                  onClick={togglePasswordVisibility}
-                />
-              )}
-            </div>
-            {/* Confirm password field */}
-            <div className="relative">
-              <label className="font-medium">Confirm Password</label>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={userData.confirmPassword}
-                onChange={(e) =>
-                  setUserData((prevUserData) => ({
-                    ...prevUserData,
-                    confirmPassword: e.target.value,
-                  }))
-                }
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg pr-10"
-              />
-            </div>
+
             <button
-              onClick={handleSubmit}
               className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
+              onClick={handleReset}
             >
-              Sign Up
+              Reset your password
             </button>
           </form>
         </div>
@@ -218,4 +152,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

@@ -5,6 +5,7 @@ import { getRandomPrompts } from "../utils/index";
 import FormsField from "../components/FormsField";
 import Overlay from "react-bootstrap/Overlay";
 import Tooltip from "react-bootstrap/Tooltip";
+import { serviceUrl } from "../service/url";
 import Loader from "../components/Loader";
 import { FaShareAlt } from "react-icons/fa";
 import { useState, useRef } from "react";
@@ -35,7 +36,7 @@ const Create = () => {
     if (form.description) {
       try {
         setGeneratingImg(true);
-        const response = await fetch("https://ai-image-generator-backend-p94i.onrender.com/api/dalle/prompt", {
+        const response = await fetch(`${serviceUrl}dalle/prompt`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -69,7 +70,7 @@ const Create = () => {
     if (form.description && form.image) {
       setLoading(true);
       try {
-        const response = await fetch("https://ai-image-generator-backend-p94i.onrender.com/api/post/upload", {
+        const response = await fetch(`${serviceUrl}post/upload`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -117,6 +118,7 @@ const Create = () => {
             value={form.name}
             handleChange={handleChange}
           />
+          
           <FormsField
             labelName="Prompt"
             type="text"

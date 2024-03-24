@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Cards from "../components/Cards";
 import FormsField from "../components/FormsField";
 import Loader from "../components/Loader";
+import { serviceUrl } from "../service/url";
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
@@ -26,7 +27,7 @@ const Home = () => {
 
     try {
       const response = await fetch(
-        "https://ai-image-generator-backend-p94i.onrender.com/api/post/getAllPosts",
+        `${serviceUrl}post/getAllPosts`,
         {
           method: "GET",
           headers: {

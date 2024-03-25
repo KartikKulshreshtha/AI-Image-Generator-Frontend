@@ -21,7 +21,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const [loading, setLoading] = useState(false); 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (userData.password !== userData.confirmPassword) {
@@ -29,17 +29,26 @@ const Signup = () => {
       setAlertMessage("Passwords do not match!, please try again");
       setAlertType("error");
     } else {
-      const response = await axios.post(`${serviceUrl}auth/signup`, userData);
-      if (response.data.success) {
+      setLoading(true)
+      try {
+        const response = await axios.post(`${serviceUrl}auth/signup`, userData);
+        if (response.data.success) {
+          setShowAlert(true);
+          setAlertMessage("Signup Successfully");
+          setAlertType("success");
+  
+          setTimeout(() => {
+            navigate("/");
+            window.location.reload();
+          }, 2000);
+          localStorage.setItem("token", response.data.token);
+        }
+      } catch (error) {
         setShowAlert(true);
-        setAlertMessage("Signup Successfully");
-        setAlertType("success");
-
-        setTimeout(() => {
-          navigate("/");
-          window.location.reload();
-        }, 2000);
-        localStorage.setItem("token", response.data.token);
+        setAlertMessage(error.response.data.message);
+        setAlertType("error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -206,10 +215,30 @@ const Signup = () => {
               />
             </div>
             <button
+              disabled={loading} // Disable button while loading
               onClick={handleSubmit}
               className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
             >
-              Sign Up
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <span>Loading...</span>
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth="0"
+                    viewBox="0 0 24 24"
+                    className="animate-spin h-5 w-5 ml-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill="none"
+                      d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
         </div>

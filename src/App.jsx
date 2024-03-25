@@ -32,12 +32,23 @@ function App() {
                 }}
               />
             </Link>
-            <Link
-              to="/create"
-              className="font-inter font-large bg-[#0284c7] text-white px-4 py-2 rounded-md"
-            >
-              Create
-            </Link>
+            <div className="flex">
+              <Link
+                to="/create"
+                className="font-inter font-large bg-[#0284c7] text-white px-4 py-2 rounded-md no-underline hover:bg-violet-600"
+              >
+                Create
+              </Link>
+              <button
+              onClick={() => {
+                localStorage.clear("token");
+                window.location.reload();
+              }}
+                className="font-inter font-large bg-[#dc2626] text-white px-4 py-2 rounded-md ml-1"
+              >
+                Logout
+              </button>
+            </div>
           </header>
           <main className="sm:p-8 px-4 py-8 w-full bg-[#e5e5e5] min-h-[calc(100vh-101.31px)]">
             <Routes>

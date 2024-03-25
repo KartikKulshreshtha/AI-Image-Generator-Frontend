@@ -11,24 +11,30 @@ const Login = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
+  const [loading, setLoading] = useState(false);
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await axios.post(`${serviceUrl}auth/login`, {
-      email: email,
-      password: password,
-    });
-    if (response.data.success) {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${serviceUrl}auth/login`, {
+        email: email,
+        password: password,
+      });
+      if (response.data.success) {
+        setShowAlert(true);
+        setAlertMessage(response.data.message);
+        setAlertType("success");
+        localStorage.setItem("token", response.data.token);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
       setShowAlert(true);
-      setAlertMessage(response.data.message);
-      setAlertType("success");
-      localStorage.setItem("token", response.data.token);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } else {
-      setShowAlert(true);
-      setAlertMessage(response.data.message);
+      setAlertMessage(error.response.data.message);
       setAlertType("error");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -140,9 +146,29 @@ const Login = () => {
 
             <button
               onClick={handleLogin}
+              disabled={loading}
               className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
             >
-              Log In
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <span>Loading...</span>
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth="0"
+                    viewBox="0 0 24 24"
+                    className="animate-spin h-5 w-5 ml-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill="none"
+                      d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                "Log In"
+              )}
             </button>
             <p className="">
               Forget your password? Don't worry, we've got you covered!
